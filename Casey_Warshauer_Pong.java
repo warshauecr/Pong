@@ -53,7 +53,7 @@ public class PongGame extends Application {
             /*
              Initializes all variables need for game
             */
-            private PongGame()
+            public PongGame()
             {
                 x= -1;
                 y= +1;
