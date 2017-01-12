@@ -1,48 +1,106 @@
 import javafx.animation.Animation;
-	import javafx.animation.KeyFrame;
-	import javafx.animation.Timeline;
-	import javafx.application.Application;
-	import javafx.scene.Scene;
-	import javafx.scene.control.Button;
-	import javafx.scene.control.Label;
-	import javafx.stage.Stage;
-	import javafx.scene.input.KeyEvent;
-	import javafx.scene.layout.Pane;
-	import javafx.scene.shape.Rectangle;
-	import javafx.util.Duration;
-	import javafx.scene.shape.Line;
-	
-
-	
-
-	public class PongGame extends Application {
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.stage.Stage;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.Pane;
+import javafx.scene.shape.Rectangle;
+import javafx.util.Duration;
+import javafx.scene.shape.Line;
+/**
+ *
+ * @author Casey Warshauer
+ 
+ Two player pong game
+ **Player 1 controls**
+ W- Up
+ S- Down
+ 
+  **Player 2 controls**
+  Up Arrow - Up
+  Down Arrow - Down
+ 
+ */
+public class PongGame extends Application {
 	    
 	    private Timeline timeline;
-	    private double x= -1;
-	    private double y= +1;
+	    private double x;
+	    private double y;
+            private final double RANDOM;
 	    private boolean eventflag;
-	    private int type= 0;
-	    private Label scoreText = new Label();
-	    private Button start = new Button("Serve");
-	    private Button newGame = new Button("New Game");
-	    private Pane root = new Pane();
-	    private int player1Score = 0;
-	    private int player2Score = 0;   
-	        
-	    private Rectangle player1 = new Rectangle(20, 215, 5, 40);
-	    private Rectangle player2 = new Rectangle(430, 215, 5, 40);
-	    private Rectangle wall1 = new Rectangle(0, 0, 5, 445);
-	    private Rectangle wall2 = new Rectangle(450, 0, 5, 445);
-	    private Rectangle wall3 = new Rectangle(5, 440, 445, 5);
-	    private Rectangle wall4 = new Rectangle(5, 0, 445, 5);
-	    private Line line4 = new Line(225, 0, 225, 444);  
-	    private Rectangle ball = new Rectangle(150, 150, 10, 10);
+	    private int type;
+	    private Label scoreText;
+	    private Button start;
+	    private Button newGame;
+            private Scene scene; 
+	    private Pane root;
+	    private int player1Score;
+	    private int player2Score;   
+	      
+	    private Rectangle player1;
+	    private Rectangle player2;
+	    private Rectangle wall1;
+	    private Rectangle wall2;
+	    private Rectangle wall3;
+	    private Rectangle wall4;
+	    private Line line4;  
+	    private Rectangle ball;
 	    
+            /*
+             Initializes all variables need for game
+            */
+            private PongGame()
+            {
+                x= -1;
+                y= +1;
+                RANDOM = 3;
+                type= 0;
+                scoreText = new Label();
+                start = new Button("Serve");
+                newGame = new Button("New Game");
+                root = new Pane();
+                player1Score = 0;
+                player2Score = 0;
+                scene = new Scene(root, 445, 550);
+                player1 = new Rectangle(20, 215, 5, 40);
+                player2 = new Rectangle(430, 215, 5, 40);
+                wall1 = new Rectangle(0, 0, 5, 445);
+	        wall2 = new Rectangle(450, 0, 5, 445);
+	        wall3 = new Rectangle(5, 440, 445, 5);
+	        wall4 = new Rectangle(5, 0, 445, 5);
+	        line4 = new Line(225, 0, 225, 444);  
+	        ball = new Rectangle(150, 150, 10, 10);
+            }
+		
 	    @Override
-	    public void start(Stage primaryStage) {
-	       
-	        //Add components to root
-	        root.getChildren().addAll(player1, player2, ball, wall1, wall2, wall3, wall4, line4, start, scoreText, newGame);
+	    public void start(Stage primaryStage) 
+            {
+        
+               //Add components
+	       createPieces();
+             
+	       //Build KeyFrame 
+	       buildKeyFrame();
+               
+               //Build stage
+               buildStage(primaryStage);
+	      
+               //Create Event Handlers
+               buildEventHandlers();
+                         
+	    }
+            
+            /*
+            Assembles game.
+            */
+            private void createPieces()
+            {
+                root.getChildren().addAll(player1, player2, ball, 
+                wall1, wall2, wall3, wall4, line4, start, scoreText, newGame);
 	        start.setTranslateX(160);
 	        start.setTranslateY(460);
 	        newGame.setTranslateX(210);
@@ -50,12 +108,27 @@ import javafx.animation.Animation;
 	        scoreText.setTranslateX(130);
 	        scoreText.setTranslateY(500);
 	        line4.getStrokeDashArray().addAll(2d);
-	        Scene scene = new Scene(root, 445, 550);
-	        primaryStage.setResizable(false);
-	        
-	        
-	        //Build KeyFrame 
-	        Duration sec = new Duration(10);
+            }
+             /*
+             Builds stage
+            */
+            
+            private void buildStage(Stage primaryStage)
+            {
+                //Don't allow application to be resized
+                primaryStage.setResizable(false);
+                 //Set stage
+	        primaryStage.setTitle("Pong!");
+	        primaryStage.setScene(scene);
+	        primaryStage.show();
+            }
+            
+            /*
+            Builds animation timeline
+            */
+            private void buildKeyFrame()
+            {
+                   Duration sec = new Duration(10);
 	        KeyFrame keyFrame = new KeyFrame(sec, event ->
 	        {
 	               Score();
@@ -70,21 +143,18 @@ import javafx.animation.Animation;
 	        }
 	        );
 	        
-	        //Build the time line animation.
+	        //Builds timeline animation.
 	        timeline = new Timeline(keyFrame);
 	        timeline.setCycleCount(Animation.INDEFINITE);
-	         timeline.play();
-	      
-	       
-	        //Set stage
-	        primaryStage.setTitle("Pong!");
-	        primaryStage.setScene(scene);
-	        primaryStage.show();
-	        
-	        
-	        
-	        
-	        //Add event handler to keyboard
+	        timeline.play();
+            }
+            
+	   /*
+	     Create event handlers
+	   */
+            private void buildEventHandlers()
+            {
+                 //Add event handler to keyboard
 	        scene.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
 	            
 	            double deltaY = 0 , deltaY2 = 0;
@@ -110,12 +180,7 @@ import javafx.animation.Animation;
 	        });
 	        
 	        
-	                
-	        
-	        
-	        
-	   
-	        //add action handler to new game button
+	        //Add action handler to new game button
 	        newGame.setOnAction (
 	        event ->
 	        {
@@ -127,7 +192,7 @@ import javafx.animation.Animation;
 	        }
 	        );
 	        
-	        //add event handler to start button
+	        //Add event handler to start button
 	        start.setOnAction(
 	        event ->
 	        {
@@ -140,7 +205,7 @@ import javafx.animation.Animation;
 	        );
 	        
 	 
-	    }
+            }
 	    
 	   /*
 	    Check for collisions with player’s pads and
@@ -152,14 +217,14 @@ import javafx.animation.Animation;
 	                  {
 	                        if( player1.getY() > 217)
 	                    {
-	                       x= +1 + Math.random()*3;
+	                       x= +1 + Math.random()*RANDOM;
 	                       y= +1;
 	                       
 	                       eventflag = false;
 	                    }
 	                    else 
 	                    {
-	                        x= +1 + Math.random()*3;
+	                        x= +1 + Math.random()*RANDOM;
 	                        y = -1;
 	                        
 	                         eventflag = true;
@@ -172,14 +237,14 @@ import javafx.animation.Animation;
 	                
 	                    if(player2.getY() > 217)
 	                    {
-	                       x= -1 - Math.random()*3; 
+	                       x= -1 - Math.random()*RANDOM; 
 	                       y= +1;
 	                     
 	                       eventflag=false;
 	                    }
 	                    else
 	                    {
-	                        x= -1 - Math.random()*3; 
+	                        x= -1 - Math.random()*RANDOM; 
 	                        y = -1;
 	                        
 	                        eventflag=true;
@@ -277,7 +342,7 @@ import javafx.animation.Animation;
 	    }
 	    
 	  /* Checks to see if either player
-	   has won.
+	     has won.
 	 */    
 	    
 	private void Winner()
@@ -303,4 +368,5 @@ import javafx.animation.Animation;
 	    }
 	    
 	}
+
 
