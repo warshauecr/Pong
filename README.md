@@ -1,2 +1,2 @@
-Pong game written in javafx. The game is fully functional.
+Pong game written in javafx. The game looks good, smooth, and fully functional.
 
