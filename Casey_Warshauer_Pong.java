@@ -15,7 +15,7 @@ import javafx.scene.shape.Line;
  *
  * @author Casey Warshauer
  
- Two player pong game
+ Two player pong game. How To play.
  **Player 1 controls**
  W- Up
  S- Down
@@ -209,7 +209,8 @@ public class PongGame extends Application {
 	    
 	   /*
 	    Check for collisions with player’s pads and
-	    decides which direction the ball should travel
+	    decides which direction the ball should travel. 
+	    Uses random to vary ball speed and direction
 	    */ 
 	   private void Padels()
 	   {
